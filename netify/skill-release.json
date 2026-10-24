@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "skillId": "netify",
-  "channel": "development",
-  "version": "0.1.0-dev.0",
+  "channel": "stable",
+  "version": "0.1.0",
   "source": {
     "repository": "https://github.com/borg0ai/netify"
   },
