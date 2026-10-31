@@ -8,6 +8,14 @@ Netify routes engineering work through focused skills, agent delegation, and evi
 npx skills add borg0ai/netify --skill netify --agent codex --copy --yes
 ```
 
+Install for every supported agent, user-level:
+
+```bash
+npx skills add borg0ai/netify --skill netify --agent '*' --global --copy --yes
+```
+
+Eve and PromptScript do not support global installs; install them per project without `--global`.
+
 The skill only invokes capabilities available in the current agent environment. Install and configure companion skills, CLIs, or MCP integrations separately when needed.
 
 ## Enforced behavior
