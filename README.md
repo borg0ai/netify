@@ -6,7 +6,7 @@ Netify routes engineering work through focused skills, agent delegation, and evi
 
 | Skill | Purpose |
 |---|---|
-| `netify` | Orchestrates engineering work with a mandatory skill check |
+| `netify-workflow` | Orchestrates engineering work with a mandatory skill check |
 | `netify-worktree` | Isolated worktree: ask first, then PR and remove the worktree |
 
 Both skills share one version.

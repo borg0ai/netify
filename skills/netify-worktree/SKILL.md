@@ -3,7 +3,7 @@ name: netify-worktree
 description: Run a task in an isolated Git worktree with ask-first approval, then finish with a pushed pull request and a removed worktree. Use when work is risky, parallel, or must not disturb the current checkout, or when the user asks for a worktree.
 license: MIT
 metadata:
-  version: "0.2.2"
+  version: "0.2.3"
 ---
 
 # Netify Worktree
