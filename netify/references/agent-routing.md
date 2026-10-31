@@ -1,6 +1,6 @@
 # Agent and skill routing
 
-Select by task need. Load each selected skill's own instructions before following its workflow. These tools evolve; their installed instructions and current CLI help outrank this routing summary.
+Judge every row below on every task and record the verdict in the SKILL.md step 2 table. Load each used skill's own instructions before following its workflow. **Required** rows cannot be skipped, only `unavailable` with evidence. These tools evolve; their installed instructions and current CLI help outrank this routing summary.
 
 | Capability | Route when | Boundary |
 |---|---|---|
@@ -9,19 +9,21 @@ Select by task need. Load each selected skill's own instructions before followin
 | Mattify | Need engineering method for debugging, TDD, or forming a precise spec | Prefer `diagnosing-bugs`, `tdd`, or `to-spec` from `skills/engineering`. Keep its method small and composable; do not let it bypass repository RFC gates. |
 | Specify | Any persistent engineering change in an RFC-governed workflow; required by Netify for persistent code changes | Deliver and validate one concern before implementation. Use Specify CLI for lifecycle changes. Wait for required approval. Do not hand-edit its managed index or tracking files when a CLI command exists. |
 | Designify | Work governed by Designify's RFC and task workflow, including approved feature implementation, debugging, and verification | Read `designify` plus the matching workflow reference. RFC is the plan; TDD is implementation method, not another approval route. |
-| Birdify | User explicitly invokes Birdify, asks for architecture/constraint/change map, or project instructions configure auto mode | Follow its constraint discovery, map rendering and visual review. For code work, show the rendered change plan and wait for approval unless the user explicitly waived that gate for this task. |
-| ReasonGraph | Before code changes to retrieve prior decisions; after a consequential non-obvious decision | Run the installed ReasonGraph context/sync workflow. If unavailable, inspect `.reasongraph/why/` directly; never claim a decision was recorded without evidence. |
-| CodeGraph | Semantic code navigation is useful and its CLI/MCP is already installed | Use its connected MCP tools or documented CLI. Its index is navigation aid, not source-of-truth. Do not install or reconfigure agents as an incidental task. |
-| ReviewGraph | Need graph-informed bug tracing, impact analysis, or change review and MCP tools are connected | For debug/review skills, fetch minimal context first, use targeted graph queries, then inspect source/tests. If MCP is absent, continue with repository tools and disclose unavailable graph review. |
-| IssueGraph | Work spans sessions, has dependencies/blockers, or needs recovery after context loss | Check `prime`/`ready` guidance, claim and update tasks using its CLI. Do not initialize or write tracker data unless project setup and user task authorize it. |
+| Birdify | **Required** for design work and for code changes touching >1 file, a shared signature, or an architecture choice. Also when the user asks for a map or project instructions configure auto mode. Skip-allowed only for a contained one-file change with an obvious test | Follow its constraint discovery, map rendering and visual review. For code work, show the rendered change plan and wait for approval unless the user explicitly waived that gate for this task. |
+| ReasonGraph | Before code changes to retrieve prior decisions; after a consequential non-obvious decision | Run the installed ReasonGraph context/sync workflow. If `.reasongraph/` is missing and the CLI is installed, run `reasongraph init` without asking. If unavailable, inspect `.reasongraph/why/` directly; never claim a decision was recorded without evidence. |
+| CodeGraph | Semantic code navigation is useful and its CLI/MCP is already installed | Use its connected MCP tools or documented CLI. Its index is navigation aid, not source-of-truth. If the CLI is installed but `.codegraph/` is missing, run `codegraph init` without asking. Do not install or reconfigure agents as an incidental task. |
+| Graphify | **Required** for design work and for code changes touching >1 file, a shared signature, or an architecture choice. Skip-allowed only for a contained one-file change | Load the `graphify` skill; build or refresh the knowledge graph if missing (init needs no approval), then query it before editing. Graph output narrows investigation; source and tests stay the source of truth. |
+| ReviewGraph | Need graph-informed bug tracing, impact analysis, or change review and MCP tools are connected | For debug/review skills, fetch minimal context first, use targeted graph queries, then inspect source/tests. If the CLI is installed but its data is missing, run its documented init without asking. If MCP/CLI is absent, mark `unavailable` with evidence, continue with repository tools and disclose. |
+| IssueGraph | Work spans sessions, has dependencies/blockers, or needs recovery after context loss | Check `prime`/`ready` guidance, claim and update tasks using its CLI. If the CLI is installed but the tracker is unseeded, run its documented init command without asking. Do not write tracker data unless the user's task authorizes it. |
 
 ## Default sequence
 
 For a normal code change, use this order and omit inapplicable steps:
 
+0. **Skill check:** print the capability table (SKILL.md step 2) and seed missing graphs.
 1. **Understand:** repository instructions and status; ReasonGraph context; targeted CodeGraph or ReviewGraph navigation when available; inspect source and tests.
 2. **Specify:** deliver and validate a single RFC; include acceptance conditions and task-level implementation steps in the repository's prescribed location.
-3. **Review scope:** if Birdify or Designify applies, follow its rendered plan and approval gates. Do not create duplicate plans.
+3. **Review scope:** Birdify and Graphify are required for design and multi-file/architecture changes; if Designify applies, follow its rendered plan and approval gates. Do not create duplicate plans.
 4. **Implement:** use Mattify or Laurenify debugging/TDD method selected for the problem. Split work across agents only at independent ownership boundaries.
 5. **Check:** run relevant tests and project checks; inspect integrated diff; ask ReviewGraph for risk/impact when available; fix verified issues.
 6. **Record and close:** sync meaningful rationale to ReasonGraph; update IssueGraph if used; advance/archive RFC through Specify where required.
