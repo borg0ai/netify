@@ -3,7 +3,7 @@ name: netify
 description: Orchestrate feature work, bug fixes, refactors, and engineering tasks with focused skills and coding agents. Use when a task needs a coordinated workflow across planning, implementation, issue tracking, code graphs, architecture, design, or review.
 license: MIT
 metadata:
-  version: "0.2.0"
+  version: "0.2.1"
 ---
 
 # Netify
@@ -24,6 +24,13 @@ Use for code or project work that benefits from routing among Laurenify, Karpath
 8. **Review and verify.** Reconcile worker changes, inspect the complete diff, run relevant project checks, and use ReviewGraph when available for graph-informed change review. Verify the requested behavior directly. Record important non-obvious decisions in ReasonGraph when available. Report exact checks and failures; never infer a pass.
 9. **Close the loop.** Update IssueGraph tasks when used. Summarize changed areas, agent contributions, verification evidence, unresolved risks, and remaining work. Do not commit, push, merge, deploy, or publish unless requested or already authorized.
 
+## Worktree and branch rule
+
+1. **Ask first.** Never create a git worktree or branch without explicit user approval. Work in the current checkout by default. To request approval, send one question that states the branch name, base branch, worktree path, and that approval includes commit, push, and opening a PR. Delegated workers inherit this rule and must not create worktrees or branches on their own.
+2. **Do exactly what was approved.** Use the approved branch name, base, and path. Do not rename, rebase onto another base, or widen scope. Ask again before any change to the plan.
+3. **Fixed sequence: use, finish, PR, remove.** Work in the approved worktree, finish the work, commit, push, open the PR with `gh pr create` against the approved base and report its URL, then remove the worktree immediately with `git worktree remove`. Do not keep the worktree for review or merge. Work is not done until each step is verified with command output. Delete the local branch only after the PR merges (`post-pr` skill).
+4. **No leftovers.** At the end, run `git worktree list` and report it. Any worktree this task created must be gone, or listed with the reason it remains. If the PR cannot be opened, report the blocker and the worktree path; never silently stop.
+
 ## Agent contract
 
 - Lead agent owns the task outcome and all cross-worker integration.
@@ -34,4 +41,4 @@ Use for code or project work that benefits from routing among Laurenify, Karpath
 
 ## Completion rule
 
-Call work complete only when acceptance conditions are checked against the result. State which checks ran, which did not, and why. Packaging, a successful agent response, or a clean-looking diff alone does not prove behavior.
+Call work complete only when acceptance conditions are checked against the result. If a worktree or branch was approved, the Worktree and branch rule's PR and cleanup conditions are part of the acceptance conditions. State which checks ran, which did not, and why. Packaging, a successful agent response, or a clean-looking diff alone does not prove behavior.

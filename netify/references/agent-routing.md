@@ -26,7 +26,8 @@ For a normal code change, use this order and omit inapplicable steps:
 3. **Review scope:** Birdify and Graphify are required for design and multi-file/architecture changes; if Designify applies, follow its rendered plan and approval gates. Do not create duplicate plans.
 4. **Implement:** use Mattify or Laurenify debugging/TDD method selected for the problem. Split work across agents only at independent ownership boundaries.
 5. **Check:** run relevant tests and project checks; inspect integrated diff; ask ReviewGraph for risk/impact when available; fix verified issues.
-6. **Record and close:** sync meaningful rationale to ReasonGraph; update IssueGraph if used; advance/archive RFC through Specify where required.
+6. **Worktree/branch (only if approved):** follow the SKILL.md Worktree and branch rule; PR opened and worktree removed before closing.
+7. **Record and close:** sync meaningful rationale to ReasonGraph; update IssueGraph if used; advance/archive RFC through Specify where required.
 
 ## Task sizing
 
