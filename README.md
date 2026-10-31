@@ -2,16 +2,25 @@
 
 Netify routes engineering work through focused skills, agent delegation, and evidence-based verification.
 
+## Skills
+
+| Skill | Purpose |
+|---|---|
+| `netify` | Orchestrates engineering work with a mandatory skill check |
+| `netify-worktree` | Isolated worktree: ask first, then PR and remove the worktree |
+
+Both skills share one version.
+
 ## Install
 
 ```bash
-npx skills add borg0ai/netify --skill netify --agent codex --copy --yes
+npx skills add borg0ai/netify --skill '*' --agent codex --copy --yes
 ```
 
 Install for every supported agent, user-level:
 
 ```bash
-npx skills add borg0ai/netify --skill netify --agent '*' --global --copy --yes
+npx skills add borg0ai/netify --skill '*' --agent '*' --global --copy --yes
 ```
 
 Eve and PromptScript do not support global installs; install them per project without `--global`.
