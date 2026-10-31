@@ -1,0 +1,21 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "netify",
+  "description": "Run every listed skill and graph on every task, enforced by a per-task skill-check hook, with ask-first worktrees that end in a PR.",
+  "owner": {
+    "name": "Borg0 AI"
+  },
+  "plugins": [
+    {
+      "name": "netify",
+      "description": "Run every listed skill and graph on every task, enforced by a per-task skill-check hook, with ask-first worktrees that end in a PR.",
+      "version": "0.3.0",
+      "source": "./plugins/netify",
+      "author": {
+        "name": "Borg0 AI"
+      },
+      "license": "MIT",
+      "category": "productivity"
+    }
+  ]
+}

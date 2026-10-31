@@ -1,18 +1,18 @@
 ---
-name: netify-worktree
+name: netify-worktree-pr
 description: Run a task in an isolated Git worktree with ask-first approval, then finish with a pushed pull request and a removed worktree. Use when work is risky, parallel, or must not disturb the current checkout, or when the user asks for a worktree.
 license: MIT
 metadata:
-  version: "0.2.3"
+  version: "0.3.0"
 ---
 
-# Netify Worktree
+# Netify Worktree PR
 
 Isolate one task in a Git worktree. The task ends only when the work is pushed, a PR is open, and the worktree is gone. Never leave a worktree behind.
 
 ## When to use
 
-Use when the user asks for a worktree, or when work is risky, exploratory, or parallel to uncommitted changes in the current checkout. Skip for single-file edits, docs, and small fixes: work in the current checkout instead.
+Run the ask-first gate on every task. Size is never a reason to skip it: the agent does not judge a task small. Ask whether a worktree or branch is wanted; without approval, work in the current checkout.
 
 ## Rules
 

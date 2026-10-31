@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit|Bash|apply_patch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/plugins/netify/hooks/netify-skill-check.mjs\"",
+            "timeout": 5,
+            "statusMessage": "Checking netify skill-check"
+          }
+        ]
+      }
+    ]
+  }
+}

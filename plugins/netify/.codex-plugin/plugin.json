@@ -1,0 +1,29 @@
+{
+  "name": "netify",
+  "version": "0.3.0",
+  "description": "Run every listed skill and graph on every task, enforced by a per-task skill-check hook, with ask-first worktrees that end in a PR.",
+  "author": {
+    "name": "Borg0 AI"
+  },
+  "repository": "https://github.com/borg0ai/netify",
+  "license": "MIT",
+  "keywords": [
+    "orchestration",
+    "skills",
+    "hooks",
+    "worktree",
+    "enforcement"
+  ],
+  "skills": "./skills/",
+  "hooks": "./hooks/hooks.json",
+  "interface": {
+    "displayName": "Netify",
+    "shortDescription": "Every skill and graph, every task",
+    "developerName": "Borg0 AI",
+    "category": "Productivity",
+    "capabilities": [
+      "Instructions",
+      "Lifecycle hooks"
+    ]
+  }
+}

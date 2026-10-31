@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "skillId": "netify-worktree-pr",
+  "channel": "stable",
+  "version": "0.3.0",
+  "source": {
+    "repository": "https://github.com/borg0ai/netify"
+  },
+  "updateManifestUrl": "https://borg0ai.github.io/netify/skill-updates/netify-worktree-pr/stable.json"
+}
