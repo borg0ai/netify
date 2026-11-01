@@ -2,6 +2,8 @@
 
 Netify runs every listed skill and graph on every engineering task, coordinated by agents, with evidence for each completion claim. A hook enforces it.
 
+Release `0.3.1` fixes transcript capability evidence detection, including assistant tool-call messages, and avoids false mutation blocks for filenames such as `init.go`.
+
 ## What is in the plugin
 
 | Part | Purpose |

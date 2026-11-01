@@ -9,7 +9,7 @@
     {
       "name": "netify",
       "description": "Run every listed skill and graph on every task, enforced by a per-task skill-check hook, with ask-first worktrees that end in a PR.",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "source": "./plugins/netify",
       "author": {
         "name": "Borg0 AI"
