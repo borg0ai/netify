@@ -1,6 +1,6 @@
 # RFC 0006: Require pushed work before closing RFCs
 
-**Status:** Approved
+**Status:** Implemented
 
 ## Summary
 

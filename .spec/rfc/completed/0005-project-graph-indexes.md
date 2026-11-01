@@ -1,6 +1,6 @@
 # RFC 0005: Seed graph indexes in the active project repository
 
-**Status:** Approved
+**Status:** Implemented
 
 ## Summary
 
