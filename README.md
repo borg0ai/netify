@@ -6,7 +6,7 @@ Netify runs every listed skill and graph on every engineering task, coordinated 
 
 | Part | Purpose |
 |---|---|
-| `netify-workflow` | Orchestrates a task: per-task skill-check table, install and init of missing tools, agent delegation, verification |
+| `netify-workflow` | Orchestrates each task: capability evidence, mandatory agent-owned graph-index checks and initialization, delegation, verification |
 | `netify-worktree-pr` | Isolated worktree: ask first, then commit, push, open a PR, remove the worktree |
 | `hooks/netify-skill-check.mjs` | PreToolUse hook that blocks edits and mutating commands until the current task has a complete skill-check table |
 
@@ -51,6 +51,7 @@ You may add capabilities, never remove one of these 12 defaults. If the file is 
 
 - Each new user message is a new task and needs its own table: one row per capability, marked `used (evidence)` or `unavailable (evidence)`. `skipped` is not allowed.
 - Until that table exists, the hook blocks Edit, Write, MultiEdit, NotebookEdit and Bash commands that write, commit, push, open PRs, or install.
+- CodeGraph, IssueGraph, ReasonGraph, and ReviewGraph cannot pass as unavailable or skipped when their agent-owned index is missing. Initialize it in the owning agent repository; never initialize it in the user's target repository.
 - The first table may mark missing tools `unavailable (not installed, installing next)`. After it, the agent installs them and prints an updated table.
 - A worktree or branch is never created without your approval.
 

@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "mapId": "netify-workflow",
+  "revision": 1,
+  "project": {
+    "id": "netify",
+    "name": "Netify"
+  },
+  "modules": [
+    {
+      "id": "workflow",
+      "role": "backend",
+      "name": "Workflow orchestration",
+      "kind": "local",
+      "responsibility": "Defines the per-task workflow, gates, tool initialization, implementation, verification, and closeout.",
+      "ownership": [{ "kind": "directory", "path": "plugins/netify/skills/netify-workflow" }],
+      "evidence": [{ "path": "plugins/netify/skills/netify-workflow/SKILL.md", "symbol": "Workflow", "note": "Workflow steps define task execution and gates." }],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": { "row": 1, "column": 1 }
+    },
+    {
+      "id": "routing",
+      "role": "backend",
+      "name": "Capability routing",
+      "kind": "local",
+      "responsibility": "Maps skills and graph tools to their use conditions, boundaries, and default sequence.",
+      "ownership": [{ "kind": "file", "path": "plugins/netify/skills/netify-workflow/references/agent-routing.md" }],
+      "evidence": [{ "path": "plugins/netify/skills/netify-workflow/references/agent-routing.md", "symbol": "Capability routing table", "note": "Capability rows define tool-specific procedures." }],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": { "row": 0, "column": 2 }
+    },
+    {
+      "id": "hook",
+      "role": "security",
+      "name": "Skill-check enforcement",
+      "kind": "local",
+      "responsibility": "Blocks edits and mutating commands until current task includes evidence for configured capabilities.",
+      "ownership": [{ "kind": "directory", "path": "plugins/netify/hooks" }],
+      "evidence": [{ "path": "plugins/netify/hooks/netify-skill-check.mjs", "symbol": "evaluate", "note": "Checks invocation, configuration, and current-task capability rows." }],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": { "row": 2, "column": 2 }
+    },
+    {
+      "id": "worktree",
+      "role": "backend",
+      "name": "Worktree and PR lifecycle",
+      "kind": "local",
+      "responsibility": "Defines approval, isolation, PR completion, and cleanup requirements for worktrees.",
+      "ownership": [{ "kind": "directory", "path": "plugins/netify/skills/netify-worktree-pr" }],
+      "evidence": [{ "path": "plugins/netify/skills/netify-worktree-pr/SKILL.md", "symbol": "Rules", "note": "Lifecycle rules gate branch and worktree operations." }],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": { "row": 2, "column": 0 }
+    },
+    {
+      "id": "tests",
+      "role": "backend",
+      "name": "Hook behavior tests",
+      "kind": "local",
+      "responsibility": "Exercises skill-check hook behavior against synthetic transcripts and mutation attempts.",
+      "ownership": [{ "kind": "directory", "path": "tests" }],
+      "evidence": [{ "path": "tests/netify-hook.test.mjs", "symbol": "test cases", "note": "Tests hook decisions for invocation, table, configuration, and mutating commands." }],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": { "row": 3, "column": 2 }
+    },
+    {
+      "id": "packaging",
+      "role": "backend",
+      "name": "Plugin packaging and docs",
+      "kind": "local",
+      "responsibility": "Declares plugin entry points, versions, installation routes, and user-facing workflow summary.",
+      "ownership": [{ "kind": "file", "path": "README.md" }, { "kind": "directory", "path": ".codex-plugin" }, { "kind": "directory", "path": ".claude-plugin" }, { "kind": "directory", "path": "plugins/netify/.plugin" }],
+      "evidence": [{ "path": "README.md", "symbol": "What is in the plugin", "note": "Describes shipped workflow, worktree skill, and hook." }],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": { "row": 1, "column": 0 }
+    }
+  ],
+  "relationships": [
+    { "id": "workflow-routes", "from": "workflow", "to": "routing", "label": "loads capability procedures", "evidence": [{ "path": "plugins/netify/skills/netify-workflow/SKILL.md", "note": "The workflow links to the capability routing reference." }], "status": "supported", "openQuestions": [], "kind": "dependency", "visibility": "overview" },
+    { "id": "workflow-hook", "from": "workflow", "to": "hook", "label": "establishes enforced task gate", "evidence": [{ "path": "plugins/netify/skills/netify-workflow/SKILL.md", "note": "Skill-check step describes the hook blocking mutations until evidence table exists." }], "status": "supported", "openQuestions": [], "kind": "control", "visibility": "overview" },
+    { "id": "workflow-worktree", "from": "workflow", "to": "worktree", "label": "routes branch and worktree operations", "evidence": [{ "path": "plugins/netify/skills/netify-workflow/SKILL.md", "note": "Worktree rule delegates lifecycle to the dedicated skill." }], "status": "supported", "openQuestions": [], "kind": "dependency", "visibility": "overview" },
+    { "id": "workflow-packaging", "from": "workflow", "to": "packaging", "label": "distributed as plugin skill", "evidence": [{ "path": "README.md", "note": "Documents plugin installation and shipped components." }], "status": "supported", "openQuestions": [], "kind": "dependency", "visibility": "overview" },
+    { "id": "hook-tests", "from": "hook", "to": "tests", "label": "behavior verified by tests", "evidence": [{ "path": "tests/netify-hook.test.mjs", "note": "Imports evaluate and DEFAULTS from the hook." }], "status": "supported", "openQuestions": [], "kind": "dependency", "visibility": "overview" }
+  ]
+}
