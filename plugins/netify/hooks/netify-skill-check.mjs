@@ -3,13 +3,13 @@
 // skill-check table covering every capability in the repo's .netify.json.
 // Task = everything after the latest user message. Inactive unless the netify
 // skill was invoked in this session (RFC 0002). Exit 2 blocks; exit 0 allows.
-import { readFileSync, existsSync, realpathSync } from 'node:fs';
-import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
+import { readFileSync, existsSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
 
 export const DEFAULTS = ['Laurenify', 'Karpathify', 'Mattify', 'Specify', 'Designify', 'Birdify',
   'ReasonGraph', 'CodeGraph', 'Graphify', 'ReviewGraph', 'IssueGraph', 'netify-worktree-pr'];
 const REQUIRED_GRAPH_INIT = ['CodeGraph', 'IssueGraph', 'ReasonGraph', 'ReviewGraph'];
-const TABLE_WAIVER = /NETIFY-WAIVE-SKILL-CHECK:\s*all four agent-owned indexes are present/i;
+const TABLE_WAIVER = /NETIFY-WAIVE-SKILL-CHECK:\s*all four graph indexes are present in the active project repository/i;
 
 const EDIT_TOOLS = new Set(['Edit', 'Write', 'MultiEdit', 'NotebookEdit', 'apply_patch']);
 const MUTATING_BASH = [
@@ -18,7 +18,7 @@ const MUTATING_BASH = [
   /\bgh\s+(pr|release|issue|repo)\s+(create|merge|edit|close|delete)\b/,
   /\b(npm|pnpm|yarn|bun)\s+(install|i|add|remove|uninstall|publish|link)\b/, /\bnpx\s+(-y\s+)?(skills|plugins)\s+(add|remove)\b/,
   /\b(pip3?|brew|cargo|go|gem)\s+install\b/,
-  /(?:^|&&|;)\s*(?:rtk\s+)?(?:codegraph|reasongraph|reviewgraph|graphify)\s+init\b/,
+  /(?:^|&&|;)\s*(?:rtk\s+)?(?:codegraph|issuegraph|reasongraph|reviewgraph|graphify)\s+init\b/,
   /(?:^|&&|;)\s*(?:rtk\s+)?issuegraph\s+-C\s+\S+\s+init\b/,
 ];
 
@@ -119,55 +119,9 @@ function hasCapabilityEvidence(rows, capability) {
 function hasGraphIndexEvidence(rows, capability) {
   const matching = rows.filter(([name]) => name.toLowerCase() === capability.toLowerCase());
   return matching.some(([, evidence]) => /\bused\b/i.test(evidence)
-    && /agent[- ]owned repository/i.test(evidence)
+    && /active project repository/i.test(evidence)
     && (/(?:\binit\b.*(?:success|succeed|pass|creat)|\bindex\b.*(?:present|ready|available))/i.test(evidence))
   ) && !matching.some(([, evidence]) => /\bskipped\b/i.test(evidence));
-}
-
-function shellWords(command) {
-  return [...command.matchAll(/"([^"]*)"|'([^']*)'|(&&|\|\||[;|])|([^\s;&|]+)/g)]
-    .map((match) => match[1] ?? match[2] ?? match[3] ?? match[4]);
-}
-
-function graphInitTarget(command) {
-  const words = shellWords(command);
-  const cliNames = ['codegraph', 'issuegraph', 'reasongraph', 'reviewgraph'];
-  let cliAt = words.findIndex((word) => cliNames.includes(word));
-  if (cliAt < 0 && words[0] === 'rtk') cliAt = words.findIndex((word, index) => index > 0 && cliNames.includes(word));
-  if (cliAt < 0) return null;
-
-  const cli = words[cliAt];
-  if (cli === 'reasongraph') {
-    if (words[cliAt - 1] === '&&' && words[cliAt - 3] === 'cd') return words[cliAt - 2];
-    if (words[cliAt - 2] === '&&' && words[cliAt - 4] === 'cd') return words[cliAt - 3];
-    return null;
-  }
-  if (cli === 'reviewgraph' || cli === 'issuegraph') {
-    const flag = cli === 'reviewgraph' ? '--repo' : '-C';
-    const flagAt = words.indexOf(flag, cliAt + 2);
-    const initAt = words.indexOf('init', cliAt + 1);
-    const orderMatches = cli === 'reviewgraph'
-      ? initAt === cliAt + 1 && flagAt > initAt
-      : flagAt > cliAt && flagAt < initAt;
-    return orderMatches ? words[flagAt + 1] : null;
-  }
-
-  if (words[cliAt + 1] !== 'init') return null;
-  return words.slice(cliAt + 2).find((word) => !word.startsWith('-')) || null;
-}
-
-function isSafeGraphInit(command, cwd) {
-  const target = graphInitTarget(command);
-  if (!target || !isAbsolute(target) || target.startsWith('~')) return false;
-  try {
-    const repo = realpathSync(target);
-    const userRepo = realpathSync(cwd || process.cwd());
-    if (!existsSync(join(repo, '.git'))) return false;
-    const fromUserRepo = relative(userRepo, repo);
-    return fromUserRepo === '..' || fromUserRepo.startsWith(`..${sep}`) || isAbsolute(fromUserRepo);
-  } catch {
-    return false;
-  }
 }
 
 export function evaluate(input, fs = { readFileSync, existsSync }) {
@@ -185,16 +139,12 @@ export function evaluate(input, fs = { readFileSync, existsSync }) {
   }
   if (!isMutating(tool, ti)) return { block: false };
 
-  // Graph initialization is the one allowed bootstrap mutation before the
-  // capability table, but only with an explicit non-target repository path.
+  // Graph indexes seed the active project, so init must run before its table
+  // can cite the resulting index.
   const graphInit = tool === 'Bash' && (
-    /(?:^|&&|;)\s*(?:rtk\s+)?(?:codegraph|issuegraph|reasongraph|reviewgraph)\s+init\b/.test(ti.command || '')
+    /(?:^|&&|;)\s*(?:rtk\s+)?(?:codegraph|graphify|issuegraph|reasongraph|reviewgraph)\s+init\b/.test(ti.command || '')
     || /(?:^|&&|;)\s*(?:rtk\s+)?issuegraph\s+-C\s+\S+\s+init\b/.test(ti.command || ''));
-  if (graphInit) {
-    return isSafeGraphInit(ti.command, dirname(cfgPath))
-      ? { block: false }
-      : { block: true, msg: 'BLOCKED by netify: graph init must target an explicit agent-owned repository path outside the user target repository.' };
-  }
+  if (graphInit) return { block: false };
 
   const tp = input.transcript_path;
   if (!tp || !fs.existsSync(tp)) return { block: false };
@@ -237,7 +187,7 @@ export function evaluate(input, fs = { readFileSync, existsSync }) {
   const ok = (waived || missing.length === 0) && missingInit.length === 0;
   return ok ? { block: false } : {
     block: true,
-    msg: `BLOCKED by netify: complete the current task's capability table before editing. Missing evidence: ${[...missing, ...missingInit].join(', ')}. Recorded assistant messages with content: ${currentText.length}; content blocks scanned: ${scannedBlocks}. If transcript omitted the table, use exact user waiver: "NETIFY-WAIVE-SKILL-CHECK: all four agent-owned indexes are present".`,
+    msg: `BLOCKED by netify: complete the current task's capability table before editing. Missing evidence: ${[...missing, ...missingInit].join(', ')}. Recorded assistant messages with content: ${currentText.length}; content blocks scanned: ${scannedBlocks}. If transcript omitted the table, use exact user waiver: "NETIFY-WAIVE-SKILL-CHECK: all four graph indexes are present in the active project repository".`,
   };
 }
 

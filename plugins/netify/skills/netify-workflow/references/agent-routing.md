@@ -19,22 +19,20 @@ Every row below must be used on every task, and the verdict goes in the SKILL.md
 
 ## Default sequence
 
-### Mandatory graph-agent initialization
+### Mandatory project graph initialization
 
-This rule overrides any graph row or earlier workflow wording that targets the active user repository. On every task, resolve the owning agent repository for CodeGraph, IssueGraph, ReasonGraph, and ReviewGraph and check its index. If missing, install the documented tool if needed, run its documented init in that agent-owned repository, and verify success before graph use or implementation. These four capabilities cannot pass as `unavailable` or `skipped` when their index is missing. Unknown repository location, install failure, or init failure blocks the task. Never initialize these indexes in the user's target repository or substitute source search for init. IssueGraph init creates storage only; do not create or update tracker records unless authorized.
-
-Use explicit target paths when the CLI supports them: `codegraph init <agent-repository>`, `reviewgraph init --repo <agent-repository>`, and `issuegraph -C <agent-repository> init`. ReasonGraph init uses the owning repository as its working directory (`cd <agent-repository> && reasongraph init`). The hook permits these four exact init operations as bootstrap mutations only when they target an explicit absolute path outside the user's target repository; unrelated commands containing `init` remain read-only.
+Graph indexes belong to the active project repository, the repository containing `.netify.json`. Initialize and query CodeGraph, IssueGraph, ReasonGraph, and ReviewGraph there; tool installation location does not change project ownership. If an index is missing, run that CLI's documented init command from the project root, then verify the index before graph-dependent work. Graph init is allowed before the capability table so it can seed the evidence the table must report. These four capabilities cannot pass as `unavailable` or `skipped` when required graph data is missing. IssueGraph init creates storage only; do not create or update tracker records unless authorized.
 
 For a normal code change, use this order and omit inapplicable steps:
 
-0. **Skill check:** print the capability table (SKILL.md step 2); pass the mandatory four-agent index check and initialize missing indexes in their owning repositories.
+0. **Skill check:** print the capability table (SKILL.md step 2); initialize missing graph indexes in the active project repository before recording their evidence.
 1. **Understand:** repository instructions and status; ReasonGraph context; targeted CodeGraph or ReviewGraph navigation when available; inspect source and tests.
 2. **Specify:** deliver and validate a single RFC; include acceptance conditions and task-level implementation steps in the repository's prescribed location.
 3. **Review scope:** Birdify and Graphify are required for design and multi-file/architecture changes; if Designify applies, follow its rendered plan and approval gates. Do not create duplicate plans.
 4. **Implement:** use Mattify or Laurenify debugging/TDD method selected for the problem. Split work across agents only at independent ownership boundaries.
 5. **Check:** run relevant tests and project checks; inspect integrated diff; ask ReviewGraph for risk/impact when available; fix verified issues.
 6. **Worktree/branch (only if approved):** use `netify-worktree-pr`; PR opened and worktree removed before closing.
-7. **Record and close:** sync meaningful rationale to ReasonGraph; update IssueGraph if used; advance/archive RFC through Specify where required.
+7. **Record and close:** sync meaningful rationale to ReasonGraph; update IssueGraph if used. For RFC-backed work, push and verify the implementation commit before advancing or archiving the RFC. Then commit, push, and verify the RFC lifecycle changes. Without push authorization or after a push failure, keep the RFC Approved and unarchived.
 
 ## Task sizing
 
