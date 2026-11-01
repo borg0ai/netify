@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "skillId": "netify-worktree-pr",
   "channel": "stable",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "source": {
     "repository": "https://github.com/borg0ai/netify"
   },
